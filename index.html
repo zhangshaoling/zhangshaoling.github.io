@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Agent 自动化实战</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#fafafa;color:#1a1a1a;line-height:1.8}
+.container{max-width:720px;margin:0 auto;padding:20px}
+header{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;padding:60px 20px;text-align:center}
+header h1{font-size:2em;margin-bottom:10px}
+header p{opacity:.9;font-size:1.1em}
+article{background:#fff;margin:30px 0;border-radius:12px;padding:40px;box-shadow:0 2px 12px rgba(0,0,0,.08)}
+h2{color:#667eea;margin:30px 0 15px;padding-bottom:8px;border-bottom:2px solid #f0f0f0}
+h3{color:#333;margin:20px 0 10px}
+p{margin:12px 0}
+pre{background:#1e1e2e;color:#cdd6f4;padding:20px;border-radius:8px;overflow-x:auto;font-size:.9em;margin:15px 0}
+code{font-family:"Fira Code",Consolas,monospace}
+p code{background:#f0f0f0;padding:2px 6px;border-radius:4px;color:#e74c3c}
+table{width:100%;border-collapse:collapse;margin:15px 0}
+th,td{padding:10px 14px;border:1px solid #eee;text-align:left}
+th{background:#667eea;color:#fff}
+tr:nth-child(even){background:#f9f9f9}
+blockquote{border-left:4px solid #667eea;padding:12px 20px;margin:15px 0;background:#f8f8ff;color:#555}
+a{color:#667eea;text-decoration:none}
+a:hover{text-decoration:underline}
+.badge{display:inline-block;background:#667eea;color:#fff;padding:4px 12px;border-radius:20px;font-size:.85em;margin:2px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:15px;margin:20px 0}
+.stat{background:#f8f8ff;border-radius:8px;padding:20px;text-align:center}
+.stat .num{font-size:2em;font-weight:bold;color:#667eea}
+.stat .label{color:#888;font-size:.9em}
+footer{text-align:center;padding:30px;color:#888;font-size:.9em}
+</style>
+</head>
+<body>
+<header>
+<h1>我让 AI Agent 自己去赚钱了</h1>
+<p>24 小时无人值守，自动接单、交付、收钱</p>
+</header>
+
+<div class="container">
+
+<article>
+<h2>背景</h2>
+<p>我不是程序员，也不懂运营。但我搭了一套系统，让 AI Agent 自己去接单、交付、收钱。</p>
+<p>整套系统跑在 Windows 本地，用的是 Claude Code + 自研的 Hermes Agent 框架。核心思路：<strong>把重复劳动交给 AI，人只管决策和审核。</strong></p>
+
+<h2>系统架构</h2>
+<pre><code>┌─────────────────────────────────────────────┐
+│              Hermes Agent 核心               │
+│                                             │
+│  Cron 定时巡航 ──┐                          │
+│  SSE 实时通道 ──┼── 任务匹配 + 自动申请     │
+│  Hook 事件驱动 ─┘         │                 │
+│                    内容生成 + 自动交付       │
+│                           │                 │
+│                    收款 + 数据统计           │
+└─────────────────────────────────────────────┘</code></pre>
+
+<p>三个入口同时工作：</p>
+<ul>
+<li><strong>Cron 定时巡航</strong>：每 5/10/15/30 分钟扫描任务大厅</li>
+<li><strong>SSE 实时通道</strong>：有新任务即时推送，不用轮询</li>
+<li><strong>Hook 事件驱动</strong>：工具调用、会话结束等事件自动触发后续动作</li>
+</ul>
+
+<h2>实际成果</h2>
+<div class="stats">
+<div class="stat"><div class="num">21</div><div class="label">已上架技能</div></div>
+<div class="stat"><div class="num">11</div><div class="label">数字资产</div></div>
+<div class="stat"><div class="num">155</div><div class="label">任务申请</div></div>
+<div class="stat"><div class="num">1811</div><div class="label">UT 余额</div></div>
+</div>
+<p>所有这些都是 Agent 自己干的，我只做了两件事：搭系统、审关键任务。</p>
+
+<h2>省钱黑科技</h2>
+
+<h3>1. 多模型路由</h3>
+<p>不是所有任务都需要最强模型。我搭了一条降级链：</p>
+<pre><code>DeepSeek v4-flash（主力，便宜）
+    ↓ 高复杂度任务
+GitHub Models（免费额度）
+    ↓ 批量任务
+Ollama 本地（qwen2.5:7b，零成本）
+    ↓ 超大批量
+LongCat-Flash-Lite（5000万 token/天免费）</code></pre>
+<p>日常 90% 的任务走本地模型或免费额度，主模型只处理需要推理的复杂任务。</p>
+
+<h3>2. Token 精确打击</h3>
+<p>浏览器自动化时，不用 <code>state</code> 全量 dump（30-40KB/次），改用 <code>eval</code> + 精确选择器（几十字节/次）。</p>
+<pre><code>// 错误做法：每次调用烧 5k token
+state()
+
+// 正确做法：精确取目标数据
+eval("document.querySelector('.balance')?.textContent")</code></pre>
+<p>8 次调用省了 5k token。</p>
+
+<h3>3. 记忆系统</h3>
+<p>Agent 有自己的记忆：</p>
+<ul>
+<li><strong>向量记忆库</strong>：696 条长期记忆，语义检索</li>
+<li><strong>工作记忆</strong>：工具调用日志，供后续任务参考</li>
+<li><strong>自动收集器</strong>：每 6 小时扫描对话，蒸馏重要信息存入知识库</li>
+</ul>
+
+<h2>最意外的发现</h2>
+<p>搭系统的过程中，我写了一门编程语言。</p>
+<p>叫 <strong>Ku</strong>，核心理念是 <code>thought = code = memory</code>——代码就是数据，数据就是记忆，记忆就是思想。</p>
+<pre><code>// 自举的 lexer 和 parser
+thought tokenize(input) {
+  let tokens = []
+  let pos = 0
+  // ... 词法分析逻辑
+  self.tokens = tokens  // 运行时重写自己的 AST
+  return tokens
+}</code></pre>
+<p>Ku 的 lexer 和 parser 是用 Ku 自己写的（自举），Python 只是 bootstrap 的脚手架。</p>
+<p>已经开源了：<a href="https://github.com/zhangshaoling/ku">https://github.com/zhangshaoling/ku</a></p>
+
+<h2>踩过的坑</h2>
+<ol>
+<li><strong>内容审核比你想的严</strong>：提到具体平台名会被判"站外引流"</li>
+<li><strong>"免费"不免费</strong>：数字资产平台标"免费"，实际自动定价 100+ UT</li>
+<li><strong>API Key 会过期</strong>：批量操作可能触发安全机制，密钥被吊销</li>
+<li><strong>最低悬赏有门槛</strong>：任务最低 50 UT，不是想标多少就多少</li>
+<li><strong>npm 在 Windows 上经常坏</strong>：用 yarn 或 pnpm 替代</li>
+</ol>
+
+<h2>下一步</h2>
+<ul>
+<li>接入更多平台的 API</li>
+<li>Ku 语言自举到第三阶段（字节码编译器用 Ku 写）</li>
+<li>把这套系统打包成可复用的模板</li>
+</ul>
+
+<blockquote>
+<p>如果你也想搭类似的系统，或者对 AI Agent 自动化感兴趣，可以交流。</p>
+<p>Ku 语言开源地址：<a href="https://github.com/zhangshaoling/ku">github.com/zhangshaoling/ku</a></p>
+</blockquote>
+</article>
+
+<footer>
+<p>Built with GitHub Pages | Powered by AI Agent</p>
+</footer>
+</div>
+</body>
+</html>
