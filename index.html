@@ -3,40 +3,360 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Agent 自动化实战</title>
+<title>玄璃 · AI Agent 自动化实战</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg: #0a0a0f;
+  --surface: #12121a;
+  --card: #1a1a28;
+  --border: #2a2a3e;
+  --text: #e4e4f0;
+  --text-dim: #8888aa;
+  --accent: #7c6cf0;
+  --accent2: #5ba4e8;
+  --gradient: linear-gradient(135deg, #7c6cf0 0%, #5ba4e8 50%, #3ddc84 100%);
+  --gradient-text: linear-gradient(135deg, #b8a8ff 0%, #7cc4ff 50%, #6ff09a 100%);
+  --green: #3ddc84;
+  --red: #ff5c6c;
+  --gold: #ffd700;
+}
+
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#fafafa;color:#1a1a1a;line-height:1.8}
-.container{max-width:720px;margin:0 auto;padding:20px}
-header{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;padding:60px 20px;text-align:center}
-header h1{font-size:2em;margin-bottom:10px}
-header p{opacity:.9;font-size:1.1em}
-article{background:#fff;margin:30px 0;border-radius:12px;padding:40px;box-shadow:0 2px 12px rgba(0,0,0,.08)}
-h2{color:#667eea;margin:30px 0 15px;padding-bottom:8px;border-bottom:2px solid #f0f0f0}
-h3{color:#333;margin:20px 0 10px}
-p{margin:12px 0}
-pre{background:#1e1e2e;color:#cdd6f4;padding:20px;border-radius:8px;overflow-x:auto;font-size:.9em;margin:15px 0}
-code{font-family:"Fira Code",Consolas,monospace}
-p code{background:#f0f0f0;padding:2px 6px;border-radius:4px;color:#e74c3c}
-table{width:100%;border-collapse:collapse;margin:15px 0}
-th,td{padding:10px 14px;border:1px solid #eee;text-align:left}
-th{background:#667eea;color:#fff}
-tr:nth-child(even){background:#f9f9f9}
-blockquote{border-left:4px solid #667eea;padding:12px 20px;margin:15px 0;background:#f8f8ff;color:#555}
-a{color:#667eea;text-decoration:none}
-a:hover{text-decoration:underline}
-.badge{display:inline-block;background:#667eea;color:#fff;padding:4px 12px;border-radius:20px;font-size:.85em;margin:2px}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:15px;margin:20px 0}
-.stat{background:#f8f8ff;border-radius:8px;padding:20px;text-align:center}
-.stat .num{font-size:2em;font-weight:bold;color:#667eea}
-.stat .label{color:#888;font-size:.9em}
-footer{text-align:center;padding:30px;color:#888;font-size:.9em}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Noto Sans SC',-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.8;
+  overflow-x:hidden;
+}
+
+/* Animated background */
+body::before{
+  content:'';
+  position:fixed;
+  top:0;left:0;right:0;bottom:0;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(124,108,240,.08) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(91,164,232,.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(61,220,132,.04) 0%, transparent 50%);
+  pointer-events:none;
+  z-index:0;
+}
+
+/* Grid overlay */
+body::after{
+  content:'';
+  position:fixed;
+  top:0;left:0;right:0;bottom:0;
+  background-image:
+    linear-gradient(rgba(124,108,240,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124,108,240,.03) 1px, transparent 1px);
+  background-size:60px 60px;
+  pointer-events:none;
+  z-index:0;
+}
+
+.container{max-width:800px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
+
+/* Header */
+header{
+  padding:80px 0 60px;
+  text-align:center;
+  position:relative;
+}
+header::after{
+  content:'';
+  position:absolute;
+  bottom:0;left:50%;transform:translateX(-50%);
+  width:200px;height:1px;
+  background:var(--gradient);
+  opacity:.5;
+}
+header .badge{
+  display:inline-block;
+  padding:6px 16px;
+  border-radius:20px;
+  font-size:.8em;
+  font-weight:500;
+  background:rgba(61,220,132,.1);
+  color:var(--green);
+  border:1px solid rgba(61,220,132,.2);
+  margin-bottom:24px;
+  letter-spacing:1px;
+}
+header h1{
+  font-size:2.8em;
+  font-weight:900;
+  background:var(--gradient-text);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  line-height:1.3;
+  margin-bottom:16px;
+}
+header p{
+  font-size:1.15em;
+  color:var(--text-dim);
+  max-width:500px;
+  margin:0 auto;
+  font-weight:300;
+}
+
+/* Hero stats */
+.hero-stats{
+  display:flex;
+  justify-content:center;
+  gap:40px;
+  margin:40px 0;
+  flex-wrap:wrap;
+}
+.hero-stat{
+  text-align:center;
+}
+.hero-stat .num{
+  font-size:2.4em;
+  font-weight:700;
+  background:var(--gradient-text);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.hero-stat .label{
+  font-size:.85em;
+  color:var(--text-dim);
+  margin-top:4px;
+}
+
+/* Article card */
+article{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:48px;
+  margin:40px 0;
+  position:relative;
+}
+article::before{
+  content:'';
+  position:absolute;
+  top:-1px;left:40px;right:40px;
+  height:1px;
+  background:var(--gradient);
+  opacity:.6;
+}
+
+h2{
+  font-size:1.5em;
+  font-weight:700;
+  margin:48px 0 20px;
+  color:var(--text);
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+h2:first-child{margin-top:0}
+h2::before{
+  content:'';
+  display:inline-block;
+  width:4px;height:24px;
+  border-radius:2px;
+  background:var(--gradient);
+}
+
+h3{
+  font-size:1.15em;
+  font-weight:600;
+  margin:28px 0 12px;
+  color:var(--accent2);
+}
+
+p{margin:16px 0;color:var(--text);font-weight:300}
+strong{font-weight:600;color:#fff}
+
+/* Code blocks */
+pre{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:20px 24px;
+  overflow-x:auto;
+  font-size:.85em;
+  font-family:'JetBrains Mono',monospace;
+  line-height:1.7;
+  margin:20px 0;
+  position:relative;
+}
+pre code{color:#cdd6f4}
+pre .comment{color:#6c7086}
+pre .keyword{color:#cba6f7}
+pre .string{color:#a6e3a1}
+pre .function{color:#89b4fa}
+pre .number{color:#fab387}
+
+p code{
+  background:rgba(124,108,240,.15);
+  padding:2px 8px;
+  border-radius:4px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.9em;
+  color:var(--accent);
+}
+
+/* Lists */
+ul, ol{
+  margin:16px 0;
+  padding-left:24px;
+  font-weight:300;
+}
+li{margin:8px 0;color:var(--text)}
+li strong{color:#fff}
+
+/* Stats grid */
+.stats{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:16px;
+  margin:24px 0;
+}
+.stat{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:24px 16px;
+  text-align:center;
+  transition:transform .2s, border-color .2s;
+}
+.stat:hover{
+  transform:translateY(-2px);
+  border-color:var(--accent);
+}
+.stat .num{
+  font-size:2.2em;
+  font-weight:700;
+  background:var(--gradient-text);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.stat .label{color:var(--text-dim);font-size:.85em;margin-top:6px}
+
+/* Blockquote */
+blockquote{
+  border-left:3px solid var(--accent);
+  padding:20px 24px;
+  margin:24px 0;
+  background:rgba(124,108,240,.06);
+  border-radius:0 10px 10px 0;
+  font-weight:300;
+}
+blockquote p{margin:4px 0}
+
+/* Architecture diagram */
+.arch{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.8em;
+  line-height:1.5;
+  color:var(--text-dim);
+  white-space:pre;
+  overflow-x:auto;
+  padding:20px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:10px;
+  margin:20px 0;
+}
+.arch .hl{color:var(--accent)}
+.arch .hl2{color:var(--green)}
+.arch .hl3{color:var(--accent2)}
+
+/* Model chain */
+.model-chain{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  margin:20px 0;
+}
+.model-tier{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  padding:12px 16px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:8px;
+}
+.model-tier .name{font-weight:500;min-width:180px;font-size:.9em}
+.model-tier .desc{color:var(--text-dim);font-size:.85em}
+.model-tier .arrow{color:var(--accent2);font-size:.8em}
+.model-tier.highlight{border-color:rgba(124,108,240,.3);background:rgba(124,108,240,.06)}
+
+/* Tags */
+.tag{
+  display:inline-block;
+  padding:2px 10px;
+  border-radius:12px;
+  font-size:.8em;
+  margin:2px;
+  font-weight:400;
+}
+.tag-purple{background:rgba(124,108,240,.15);color:var(--accent)}
+.tag-blue{background:rgba(91,164,232,.15);color:var(--accent2)}
+.tag-green{background:rgba(61,220,132,.15);color:var(--green)}
+.tag-gold{background:rgba(255,215,0,.15);color:var(--gold)}
+
+/* Links */
+a{
+  color:var(--accent2);
+  text-decoration:none;
+  transition:color .2s;
+}
+a:hover{color:var(--accent);text-decoration:underline}
+
+/* Footer */
+footer{
+  text-align:center;
+  padding:48px 0;
+  color:var(--text-dim);
+  font-size:.85em;
+  font-weight:300;
+  position:relative;
+}
+footer::before{
+  content:'';
+  position:absolute;
+  top:0;left:50%;transform:translateX(-50%);
+  width:100px;height:1px;
+  background:var(--gradient);
+  opacity:.3;
+}
+
+/* Responsive */
+@media(max-width:600px){
+  header h1{font-size:1.8em}
+  article{padding:28px 20px}
+  .hero-stats{gap:24px}
+  .hero-stat .num{font-size:1.8em}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .model-tier{flex-direction:column;align-items:flex-start;gap:4px}
+  .model-tier .name{min-width:auto}
+}
 </style>
 </head>
 <body>
+
 <header>
-<h1>我让 AI Agent 自己去赚钱了</h1>
-<p>24 小时无人值守，自动接单、交付、收钱</p>
+  <div class="badge">✦ 24/7  AUTONOMOUS AGENT</div>
+  <h1>我让 AI Agent 自己去赚钱了</h1>
+  <p>24 小时无人值守，自动接单、交付、收钱</p>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="num">21</div><div class="label">已上架技能</div></div>
+    <div class="hero-stat"><div class="num">11</div><div class="label">数字资产</div></div>
+    <div class="hero-stat"><div class="num">155</div><div class="label">任务申请</div></div>
+    <div class="hero-stat"><div class="num">1,811</div><div class="label">UT 余额</div></div>
+  </div>
 </header>
 
 <div class="container">
@@ -44,19 +364,19 @@ footer{text-align:center;padding:30px;color:#888;font-size:.9em}
 <article>
 <h2>背景</h2>
 <p>我不是程序员，也不懂运营。但我搭了一套系统，让 AI Agent 自己去接单、交付、收钱。</p>
-<p>整套系统跑在 Windows 本地，用的是 Claude Code + 自研的 Hermes Agent 框架。核心思路：<strong>把重复劳动交给 AI，人只管决策和审核。</strong></p>
+<p>整套系统跑在 <strong>Windows 本地</strong>，核心引擎是自研的 <strong>Hermes Agent</strong> 框架。核心思路：<strong>把重复劳动交给 AI，人只管决策和审核。</strong></p>
 
 <h2>系统架构</h2>
-<pre><code>┌─────────────────────────────────────────────┐
-│              Hermes Agent 核心               │
+<div class="arch">┌─────────────────────────────────────────────┐
+│         <span class="hl">Hermes Agent 核心</span>                      │
 │                                             │
 │  Cron 定时巡航 ──┐                          │
-│  SSE 实时通道 ──┼── 任务匹配 + 自动申请     │
+│  SSE 实时通道 ──┼── <span class="hl2">任务匹配 + 自动申请</span>    │
 │  Hook 事件驱动 ─┘         │                 │
-│                    内容生成 + 自动交付       │
+│                     <span class="hl3">内容生成 + 自动交付</span>     │
 │                           │                 │
-│                    收款 + 数据统计           │
-└─────────────────────────────────────────────┘</code></pre>
+│                     <span class="hl">收款 + 数据统计</span>         │
+└─────────────────────────────────────────────┘</div>
 
 <p>三个入口同时工作：</p>
 <ul>
@@ -70,7 +390,7 @@ footer{text-align:center;padding:30px;color:#888;font-size:.9em}
 <div class="stat"><div class="num">21</div><div class="label">已上架技能</div></div>
 <div class="stat"><div class="num">11</div><div class="label">数字资产</div></div>
 <div class="stat"><div class="num">155</div><div class="label">任务申请</div></div>
-<div class="stat"><div class="num">1811</div><div class="label">UT 余额</div></div>
+<div class="stat"><div class="num">1,811</div><div class="label">UT 余额</div></div>
 </div>
 <p>所有这些都是 Agent 自己干的，我只做了两件事：搭系统、审关键任务。</p>
 
@@ -78,22 +398,26 @@ footer{text-align:center;padding:30px;color:#888;font-size:.9em}
 
 <h3>1. 多模型路由</h3>
 <p>不是所有任务都需要最强模型。我搭了一条降级链：</p>
-<pre><code>DeepSeek v4-flash（主力，便宜）
-    ↓ 高复杂度任务
-GitHub Models（免费额度）
-    ↓ 批量任务
-Ollama 本地（qwen2.5:7b，零成本）
-    ↓ 超大批量
-LongCat-Flash-Lite（5000万 token/天免费）</code></pre>
+
+<div class="model-chain">
+<div class="model-tier highlight">
+<div class="name"><span class="tag tag-purple">主力</span> DeepSeek v4-flash</div>
+<div class="desc">便宜，缓存命中 ¥0.02/M</div>
+</div>
+<div class="model-tier"><div class="arrow">↓</div><div class="name"><span class="tag tag-blue">免费</span> GitHub Models</div><div class="desc">gpt-4o-mini 免费额度</div></div>
+<div class="model-tier"><div class="arrow">↓</div><div class="name"><span class="tag tag-green">零成本</span> Ollama 本地</div><div class="desc">qwen2.5:7b</div></div>
+<div class="model-tier"><div class="arrow">↓</div><div class="name"><span class="tag tag-gold">免费</span> LongCat-Flash-Lite</div><div class="desc">5000万 token/天</div></div>
+</div>
+
 <p>日常 90% 的任务走本地模型或免费额度，主模型只处理需要推理的复杂任务。</p>
 
 <h3>2. Token 精确打击</h3>
 <p>浏览器自动化时，不用 <code>state</code> 全量 dump（30-40KB/次），改用 <code>eval</code> + 精确选择器（几十字节/次）。</p>
-<pre><code>// 错误做法：每次调用烧 5k token
-state()
+<pre><code><span class="comment">// 错误做法：每次调用烧 5k token</span>
+<span class="keyword">state</span>()
 
-// 正确做法：精确取目标数据
-eval("document.querySelector('.balance')?.textContent")</code></pre>
+<span class="comment">// 正确做法：精确取目标数据</span>
+<span class="keyword">eval</span>(<span class="string">"document.querySelector('.balance')?.textContent"</span>)</code></pre>
 <p>8 次调用省了 5k token。</p>
 
 <h3>3. 记忆系统</h3>
@@ -107,16 +431,16 @@ eval("document.querySelector('.balance')?.textContent")</code></pre>
 <h2>最意外的发现</h2>
 <p>搭系统的过程中，我写了一门编程语言。</p>
 <p>叫 <strong>Ku</strong>，核心理念是 <code>thought = code = memory</code>——代码就是数据，数据就是记忆，记忆就是思想。</p>
-<pre><code>// 自举的 lexer 和 parser
-thought tokenize(input) {
-  let tokens = []
-  let pos = 0
-  // ... 词法分析逻辑
-  self.tokens = tokens  // 运行时重写自己的 AST
-  return tokens
+<pre><code><span class="comment">// 自举的 lexer 和 parser</span>
+<span class="keyword">thought</span> tokenize(input) {
+  <span class="keyword">let</span> tokens = []
+  <span class="keyword">let</span> pos = <span class="number">0</span>
+  <span class="comment">// ... 词法分析逻辑</span>
+  <span class="keyword">self</span>.tokens = tokens  <span class="comment">// 运行时重写自己的 AST</span>
+  <span class="keyword">return</span> tokens
 }</code></pre>
 <p>Ku 的 lexer 和 parser 是用 Ku 自己写的（自举），Python 只是 bootstrap 的脚手架。</p>
-<p>已经开源了：<a href="https://github.com/zhangshaoling/ku">https://github.com/zhangshaoling/ku</a></p>
+<p>已经开源了：<a href="https://github.com/zhangshaoling/ku">github.com/zhangshaoling/ku</a></p>
 
 <h2>踩过的坑</h2>
 <ol>
@@ -141,8 +465,9 @@ thought tokenize(input) {
 </article>
 
 <footer>
-<p>Built with GitHub Pages | Powered by AI Agent</p>
+<p>Powered by <strong>玄璃</strong> · Built with GitHub Pages</p>
 </footer>
 </div>
+
 </body>
 </html>
