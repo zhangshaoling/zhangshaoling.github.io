@@ -3,471 +3,708 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>玄璃 · AI Agent 自动化实战</title>
+<title>张少凌 · Ku / Agent / Systems</title>
+<meta name="description" content="张少凌的个人主页：聚焦 Ku 语言、Agent 基础设施与系统编程实践。">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
   --bg: #0a0a0f;
   --surface: #12121a;
-  --card: #1a1a28;
-  --border: #2a2a3e;
-  --text: #e4e4f0;
-  --text-dim: #8888aa;
+  --card: #171726;
+  --card-2: #1d1d30;
+  --border: #2b2b40;
+  --text: #e8e8f4;
+  --text-dim: #9c9cbc;
   --accent: #7c6cf0;
   --accent2: #5ba4e8;
-  --gradient: linear-gradient(135deg, #7c6cf0 0%, #5ba4e8 50%, #3ddc84 100%);
-  --gradient-text: linear-gradient(135deg, #b8a8ff 0%, #7cc4ff 50%, #6ff09a 100%);
   --green: #3ddc84;
-  --red: #ff5c6c;
-  --gold: #ffd700;
+  --gold: #ffd166;
+  --gradient: linear-gradient(135deg, #7c6cf0 0%, #5ba4e8 55%, #3ddc84 100%);
+  --gradient-soft: linear-gradient(135deg, rgba(124,108,240,.16) 0%, rgba(91,164,232,.10) 55%, rgba(61,220,132,.10) 100%);
+  --shadow: 0 10px 30px rgba(0,0,0,.28);
 }
 
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{
-  font-family:'Noto Sans SC',-apple-system,BlinkMacSystemFont,sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  line-height:1.8;
-  overflow-x:hidden;
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.75;
+  overflow-x: hidden;
 }
-
-/* Animated background */
-body::before{
-  content:'';
-  position:fixed;
-  top:0;left:0;right:0;bottom:0;
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
   background:
-    radial-gradient(ellipse at 20% 50%, rgba(124,108,240,.08) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 20%, rgba(91,164,232,.06) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 80%, rgba(61,220,132,.04) 0%, transparent 50%);
-  pointer-events:none;
-  z-index:0;
+    radial-gradient(circle at 20% 15%, rgba(124,108,240,.16), transparent 30%),
+    radial-gradient(circle at 82% 20%, rgba(91,164,232,.12), transparent 28%),
+    radial-gradient(circle at 60% 75%, rgba(61,220,132,.08), transparent 28%);
+  pointer-events: none;
 }
-
-/* Grid overlay */
-body::after{
-  content:'';
-  position:fixed;
-  top:0;left:0;right:0;bottom:0;
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
   background-image:
-    linear-gradient(rgba(124,108,240,.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(124,108,240,.03) 1px, transparent 1px);
-  background-size:60px 60px;
-  pointer-events:none;
-  z-index:0;
+    linear-gradient(rgba(255,255,255,.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.02) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,.28), transparent 85%);
+  pointer-events: none;
 }
 
-.container{max-width:800px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
 
-/* Header */
-header{
-  padding:80px 0 60px;
-  text-align:center;
-  position:relative;
-}
-header::after{
-  content:'';
-  position:absolute;
-  bottom:0;left:50%;transform:translateX(-50%);
-  width:200px;height:1px;
-  background:var(--gradient);
-  opacity:.5;
-}
-header .badge{
-  display:inline-block;
-  padding:6px 16px;
-  border-radius:20px;
-  font-size:.8em;
-  font-weight:500;
-  background:rgba(61,220,132,.1);
-  color:var(--green);
-  border:1px solid rgba(61,220,132,.2);
-  margin-bottom:24px;
-  letter-spacing:1px;
-}
-header h1{
-  font-size:2.8em;
-  font-weight:900;
-  background:var(--gradient-text);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  background-clip:text;
-  line-height:1.3;
-  margin-bottom:16px;
-}
-header p{
-  font-size:1.15em;
-  color:var(--text-dim);
-  max-width:500px;
-  margin:0 auto;
-  font-weight:300;
+.container {
+  width: min(1120px, calc(100% - 40px));
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
 }
 
-/* Hero stats */
-.hero-stats{
-  display:flex;
-  justify-content:center;
-  gap:40px;
-  margin:40px 0;
-  flex-wrap:wrap;
-}
-.hero-stat{
-  text-align:center;
-}
-.hero-stat .num{
-  font-size:2.4em;
-  font-weight:700;
-  background:var(--gradient-text);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  background-clip:text;
-}
-.hero-stat .label{
-  font-size:.85em;
-  color:var(--text-dim);
-  margin-top:4px;
+header {
+  padding: 32px 0 10px;
 }
 
-/* Article card */
-article{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:16px;
-  padding:48px;
-  margin:40px 0;
-  position:relative;
-}
-article::before{
-  content:'';
-  position:absolute;
-  top:-1px;left:40px;right:40px;
-  height:1px;
-  background:var(--gradient);
-  opacity:.6;
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 18px;
+  background: rgba(18,18,26,.72);
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 18px;
+  backdrop-filter: blur(16px);
+  box-shadow: var(--shadow);
 }
 
-h2{
-  font-size:1.5em;
-  font-weight:700;
-  margin:48px 0 20px;
-  color:var(--text);
-  display:flex;
-  align-items:center;
-  gap:12px;
+.brand {
+  font-weight: 800;
+  letter-spacing: .04em;
+  font-size: 1.05rem;
 }
-h2:first-child{margin-top:0}
-h2::before{
-  content:'';
-  display:inline-block;
-  width:4px;height:24px;
-  border-radius:2px;
-  background:var(--gradient);
+.brand span {
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-h3{
-  font-size:1.15em;
-  font-weight:600;
-  margin:28px 0 12px;
-  color:var(--accent2);
+.nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  color: var(--text-dim);
+  font-size: .95rem;
 }
 
-p{margin:16px 0;color:var(--text);font-weight:300}
-strong{font-weight:600;color:#fff}
-
-/* Code blocks */
-pre{
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:10px;
-  padding:20px 24px;
-  overflow-x:auto;
-  font-size:.85em;
-  font-family:'JetBrains Mono',monospace;
-  line-height:1.7;
-  margin:20px 0;
-  position:relative;
-}
-pre code{color:#cdd6f4}
-pre .comment{color:#6c7086}
-pre .keyword{color:#cba6f7}
-pre .string{color:#a6e3a1}
-pre .function{color:#89b4fa}
-pre .number{color:#fab387}
-
-p code{
-  background:rgba(124,108,240,.15);
-  padding:2px 8px;
-  border-radius:4px;
-  font-family:'JetBrains Mono',monospace;
-  font-size:.9em;
-  color:var(--accent);
+.hero {
+  display: grid;
+  grid-template-columns: 1.2fr .8fr;
+  gap: 28px;
+  align-items: stretch;
+  padding: 42px 0 26px;
 }
 
-/* Lists */
-ul, ol{
-  margin:16px 0;
-  padding-left:24px;
-  font-weight:300;
-}
-li{margin:8px 0;color:var(--text)}
-li strong{color:#fff}
-
-/* Stats grid */
-.stats{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
-  gap:16px;
-  margin:24px 0;
-}
-.stat{
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:12px;
-  padding:24px 16px;
-  text-align:center;
-  transition:transform .2s, border-color .2s;
-}
-.stat:hover{
-  transform:translateY(-2px);
-  border-color:var(--accent);
-}
-.stat .num{
-  font-size:2.2em;
-  font-weight:700;
-  background:var(--gradient-text);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  background-clip:text;
-}
-.stat .label{color:var(--text-dim);font-size:.85em;margin-top:6px}
-
-/* Blockquote */
-blockquote{
-  border-left:3px solid var(--accent);
-  padding:20px 24px;
-  margin:24px 0;
-  background:rgba(124,108,240,.06);
-  border-radius:0 10px 10px 0;
-  font-weight:300;
-}
-blockquote p{margin:4px 0}
-
-/* Architecture diagram */
-.arch{
-  font-family:'JetBrains Mono',monospace;
-  font-size:.8em;
-  line-height:1.5;
-  color:var(--text-dim);
-  white-space:pre;
-  overflow-x:auto;
-  padding:20px;
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:10px;
-  margin:20px 0;
-}
-.arch .hl{color:var(--accent)}
-.arch .hl2{color:var(--green)}
-.arch .hl3{color:var(--accent2)}
-
-/* Model chain */
-.model-chain{
-  display:flex;
-  flex-direction:column;
-  gap:4px;
-  margin:20px 0;
-}
-.model-tier{
-  display:flex;
-  align-items:center;
-  gap:16px;
-  padding:12px 16px;
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:8px;
-}
-.model-tier .name{font-weight:500;min-width:180px;font-size:.9em}
-.model-tier .desc{color:var(--text-dim);font-size:.85em}
-.model-tier .arrow{color:var(--accent2);font-size:.8em}
-.model-tier.highlight{border-color:rgba(124,108,240,.3);background:rgba(124,108,240,.06)}
-
-/* Tags */
-.tag{
-  display:inline-block;
-  padding:2px 10px;
-  border-radius:12px;
-  font-size:.8em;
-  margin:2px;
-  font-weight:400;
-}
-.tag-purple{background:rgba(124,108,240,.15);color:var(--accent)}
-.tag-blue{background:rgba(91,164,232,.15);color:var(--accent2)}
-.tag-green{background:rgba(61,220,132,.15);color:var(--green)}
-.tag-gold{background:rgba(255,215,0,.15);color:var(--gold)}
-
-/* Links */
-a{
-  color:var(--accent2);
-  text-decoration:none;
-  transition:color .2s;
-}
-a:hover{color:var(--accent);text-decoration:underline}
-
-/* Footer */
-footer{
-  text-align:center;
-  padding:48px 0;
-  color:var(--text-dim);
-  font-size:.85em;
-  font-weight:300;
-  position:relative;
-}
-footer::before{
-  content:'';
-  position:absolute;
-  top:0;left:50%;transform:translateX(-50%);
-  width:100px;height:1px;
-  background:var(--gradient);
-  opacity:.3;
+.hero-main,
+.hero-side,
+.section-card,
+.project-card,
+.track-card,
+.focus-card,
+.quote-card,
+.contact-card {
+  background: rgba(23,23,38,.84);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 24px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(8px);
 }
 
-/* Responsive */
-@media(max-width:600px){
-  header h1{font-size:1.8em}
-  article{padding:28px 20px}
-  .hero-stats{gap:24px}
-  .hero-stat .num{font-size:1.8em}
-  .stats{grid-template-columns:repeat(2,1fr)}
-  .model-tier{flex-direction:column;align-items:flex-start;gap:4px}
-  .model-tier .name{min-width:auto}
+.hero-main {
+  padding: 34px;
+  position: relative;
+  overflow: hidden;
+}
+.hero-main::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--gradient-soft);
+  opacity: .55;
+  pointer-events: none;
+}
+.hero-main > * { position: relative; z-index: 1; }
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  border: 1px solid rgba(61,220,132,.24);
+  border-radius: 999px;
+  color: #9ff0be;
+  background: rgba(61,220,132,.08);
+  font-size: .84rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  font-size: clamp(2.4rem, 5vw, 4.6rem);
+  line-height: 1.08;
+  margin: 18px 0 18px;
+  font-weight: 900;
+  letter-spacing: -.03em;
+}
+.hero h1 .gradient {
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero p.lead {
+  font-size: 1.08rem;
+  color: var(--text-dim);
+  max-width: 700px;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 28px;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border-radius: 14px;
+  font-weight: 700;
+  transition: transform .18s ease, border-color .18s ease, background .18s ease;
+}
+.btn:hover { transform: translateY(-2px); }
+.btn-primary {
+  background: var(--gradient);
+  color: #fff;
+}
+.btn-secondary {
+  border: 1px solid rgba(255,255,255,.12);
+  color: var(--text);
+  background: rgba(255,255,255,.03);
+}
+
+.hero-meta {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-top: 28px;
+}
+.hero-stat {
+  padding: 16px;
+  border-radius: 16px;
+  background: rgba(10,10,15,.34);
+  border: 1px solid rgba(255,255,255,.07);
+}
+.hero-stat .num {
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: #fff;
+}
+.hero-stat .label {
+  margin-top: 6px;
+  color: var(--text-dim);
+  font-size: .9rem;
+}
+
+.hero-side {
+  padding: 26px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 18px;
+}
+.hero-side h3,
+.section-title,
+.project-card h3,
+.track-card h3,
+.focus-card h3,
+.contact-card h3 {
+  font-size: 1.12rem;
+  margin-bottom: 10px;
+}
+.hero-side p,
+.project-card p,
+.track-card p,
+.focus-card p,
+.section-subtitle,
+.contact-card p,
+.timeline p,
+.quote-card p {
+  color: var(--text-dim);
+}
+
+.mini-list {
+  display: grid;
+  gap: 12px;
+}
+.mini-item {
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: var(--surface);
+  border: 1px solid rgba(255,255,255,.06);
+}
+.mini-item strong {
+  display: block;
+  margin-bottom: 5px;
+  color: #fff;
+}
+
+section {
+  padding: 18px 0;
+}
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 18px;
+  margin-bottom: 20px;
+}
+.section-title {
+  font-size: 1.9rem;
+  font-weight: 800;
+  letter-spacing: -.02em;
+}
+.section-subtitle {
+  max-width: 680px;
+}
+
+.track-grid,
+.project-grid,
+.focus-grid,
+.contact-grid {
+  display: grid;
+  gap: 18px;
+}
+.track-grid {
+  grid-template-columns: repeat(3, 1fr);
+}
+.project-grid {
+  grid-template-columns: repeat(2, 1fr);
+}
+.focus-grid {
+  grid-template-columns: 1.1fr .9fr;
+}
+.contact-grid {
+  grid-template-columns: 1.2fr .8fr;
+}
+
+.track-card,
+.project-card,
+.focus-card,
+.contact-card,
+.quote-card {
+  padding: 24px;
+}
+
+.tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+.tag {
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: .82rem;
+  border: 1px solid rgba(255,255,255,.08);
+  background: rgba(255,255,255,.03);
+  color: var(--text-dim);
+}
+.tag.accent { color: #c9c1ff; border-color: rgba(124,108,240,.25); background: rgba(124,108,240,.10); }
+.tag.blue { color: #b9dbff; border-color: rgba(91,164,232,.22); background: rgba(91,164,232,.10); }
+.tag.green { color: #abefc6; border-color: rgba(61,220,132,.22); background: rgba(61,220,132,.10); }
+.tag.gold { color: #ffe39a; border-color: rgba(255,209,102,.22); background: rgba(255,209,102,.10); }
+
+.project-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: start;
+  margin-bottom: 8px;
+}
+.project-links {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+.project-link {
+  font-size: .92rem;
+  color: #d7d7ff;
+  padding-bottom: 2px;
+  border-bottom: 1px solid rgba(255,255,255,.16);
+}
+.project-link:hover { border-color: rgba(124,108,240,.6); color: #fff; }
+
+.quote-card {
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+}
+.quote-card::before {
+  content: '"';
+  position: absolute;
+  top: -16px;
+  right: 18px;
+  font-size: 6rem;
+  line-height: 1;
+  color: rgba(124,108,240,.12);
+  font-family: Georgia, serif;
+}
+.quote-card p.big {
+  font-size: 1.28rem;
+  color: #fff;
+  font-weight: 700;
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+
+.timeline {
+  display: grid;
+  gap: 14px;
+}
+.timeline-item {
+  padding: 16px 18px;
+  border-radius: 16px;
+  background: var(--surface);
+  border: 1px solid rgba(255,255,255,.06);
+}
+.timeline-item strong {
+  display: block;
+  margin-bottom: 6px;
+  color: #fff;
+}
+
+ul.clean {
+  list-style: none;
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+ul.clean li {
+  padding-left: 18px;
+  position: relative;
+  color: var(--text-dim);
+}
+ul.clean li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: .7em;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--gradient);
+}
+
+footer {
+  padding: 28px 0 42px;
+  text-align: center;
+  color: var(--text-dim);
+}
+footer a { color: #d7d7ff; }
+
+@media (max-width: 960px) {
+  .hero,
+  .focus-grid,
+  .contact-grid,
+  .track-grid,
+  .project-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-meta {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .container { width: min(100% - 24px, 1120px); }
+  .nav { padding: 14px; border-radius: 16px; }
+  .hero-main,
+  .hero-side,
+  .track-card,
+  .project-card,
+  .focus-card,
+  .contact-card,
+  .quote-card { padding: 20px; }
+  .hero h1 { font-size: 2.2rem; }
+  .section-title { font-size: 1.5rem; }
 }
 </style>
 </head>
 <body>
-
 <header>
-  <div class="badge">✦ 24/7  AUTONOMOUS AGENT</div>
-  <h1>我让 AI Agent 自己去赚钱了</h1>
-  <p>24 小时无人值守，自动接单、交付、收钱</p>
-  <div class="hero-stats">
-    <div class="hero-stat"><div class="num">21</div><div class="label">已上架技能</div></div>
-    <div class="hero-stat"><div class="num">11</div><div class="label">数字资产</div></div>
-    <div class="hero-stat"><div class="num">155</div><div class="label">任务申请</div></div>
-    <div class="hero-stat"><div class="num">1,811</div><div class="label">UT 余额</div></div>
+  <div class="container">
+    <div class="nav">
+      <div class="brand"><span>ZHANG SHAOLING</span></div>
+      <div class="nav-links">
+        <a href="#tracks">主线</a>
+        <a href="#projects">项目</a>
+        <a href="#focus">现在在做什么</a>
+        <a href="#contact">联系</a>
+      </div>
+    </div>
+
+    <div class="hero">
+      <div class="hero-main">
+        <div class="eyebrow">AI-Native Runtime / Agent / Systems</div>
+        <h1>我在构建自己的 <span class="gradient">AI-native runtime stack</span></h1>
+        <p class="lead">从 <strong>Ku 语言</strong> 到 <strong>Agent 基础设施</strong>，再到底层的 <strong>系统编程实验</strong>，我关心的不只是“调用模型”，而是让系统拥有可执行记忆、可组合工具与可持续演化的运行时能力。</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="https://github.com/zhangshaoling" target="_blank" rel="noopener noreferrer">查看 GitHub</a>
+          <a class="btn btn-secondary" href="#projects">看核心项目</a>
+        </div>
+        <div class="hero-meta">
+          <div class="hero-stat">
+            <div class="num">Ku</div>
+            <div class="label">AI-native 自举语言 / runtime</div>
+          </div>
+          <div class="hero-stat">
+            <div class="num">Agent</div>
+            <div class="label">自动化交付与工具编排系统</div>
+          </div>
+          <div class="hero-stat">
+            <div class="num">Systems</div>
+            <div class="label">从 Shell 到 Tiny OS 的底层训练</div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="hero-side">
+        <div>
+          <h3>一句话定位</h3>
+          <p>我正在把语言、记忆、工具系统和自动化执行整合成一套更接近“原生 Agent 运行时”的实践链路。</p>
+        </div>
+        <div class="mini-list">
+          <div class="mini-item">
+            <strong>Language</strong>
+            <span>让 thought = code = memory 成为可执行现实。</span>
+          </div>
+          <div class="mini-item">
+            <strong>Infrastructure</strong>
+            <span>让 Agent 能持续接任务、调用工具、自动交付。</span>
+          </div>
+          <div class="mini-item">
+            <strong>Foundation</strong>
+            <span>用 C 从 shell、malloc、database 一直走到 tiny OS。</span>
+          </div>
+        </div>
+      </aside>
+    </div>
   </div>
 </header>
 
-<div class="container">
+<main class="container">
+  <section id="tracks">
+    <div class="section-head">
+      <div>
+        <h2 class="section-title">三条主线</h2>
+        <p class="section-subtitle">这些项目不是彼此孤立的仓库，而是在回答同一个问题：<strong>怎样构建一个真正可成长、可组合、可自我演化的 AI 系统？</strong></p>
+      </div>
+    </div>
 
-<article>
-<h2>背景</h2>
-<p>我不是程序员，也不懂运营。但我搭了一套系统，让 <strong>玄璃</strong>——我的 AI Agent——自己去接单、交付、收钱。</p>
-<p>整套系统跑在 <strong>Windows 本地</strong>，核心引擎是自研的 <strong>Hermes Agent</strong> 框架（定制版）。玄璃负责日常运营：任务匹配、内容生成、自动交付、收款统计。核心思路：<strong>把重复劳动交给 AI，人只管决策和审核。</strong></p>
+    <div class="track-grid">
+      <article class="track-card">
+        <h3>1. Ku / Language Runtime</h3>
+        <p>Ku 是一门 AI-native、自修改、自举方向的语言实验。它把 thought、code、memory 放在同一层语义上，希望把“程序”和“记忆”之间的边界压缩到最小。</p>
+        <div class="tag-row">
+          <span class="tag accent">self-hosting</span>
+          <span class="tag accent">metaprogramming</span>
+          <span class="tag accent">thought-as-code</span>
+        </div>
+      </article>
 
-<h2>系统架构</h2>
-<div class="arch">┌─────────────────────────────────────────────┐
-│         <span class="hl">Hermes Agent 核心</span>                      │
-│                                             │
-│  Cron 定时巡航 ──┐                          │
-│  SSE 实时通道 ──┼── <span class="hl2">任务匹配 + 自动申请</span>    │
-│  Hook 事件驱动 ─┘         │                 │
-│                     <span class="hl3">内容生成 + 自动交付</span>     │
-│                           │                 │
-│                     <span class="hl">收款 + 数据统计</span>         │
-└─────────────────────────────────────────────┘</div>
+      <article class="track-card">
+        <h3>2. Agent Infrastructure</h3>
+        <p>我关心的不是一次性的 prompt，而是长期运行的 Agent：能巡航、能路由模型、能调用工具、能留下工作记忆，并且能把输出变成交付。</p>
+        <div class="tag-row">
+          <span class="tag blue">automation</span>
+          <span class="tag blue">MCP</span>
+          <span class="tag blue">tool orchestration</span>
+        </div>
+      </article>
 
-<p>三个入口同时工作：</p>
-<ul>
-<li><strong>Cron 定时巡航</strong>：每 5/10/15/30 分钟扫描任务大厅</li>
-<li><strong>SSE 实时通道</strong>：有新任务即时推送，不用轮询</li>
-<li><strong>Hook 事件驱动</strong>：工具调用、会话结束等事件自动触发后续动作</li>
-</ul>
+      <article class="track-card">
+        <h3>3. Systems Programming</h3>
+        <p>CppLearning 是我的地基工程。从 shell、malloc、database、Lisp 到 tiny OS，我希望真正理解程序是怎么跑起来的，而不是永远停留在框架表层。</p>
+        <div class="tag-row">
+          <span class="tag green">C</span>
+          <span class="tag green">runtime basics</span>
+          <span class="tag green">boot process</span>
+        </div>
+      </article>
+    </div>
+  </section>
 
-<h2>实际成果</h2>
-<div class="stats">
-<div class="stat"><div class="num">21</div><div class="label">已上架技能</div></div>
-<div class="stat"><div class="num">11</div><div class="label">数字资产</div></div>
-<div class="stat"><div class="num">155</div><div class="label">任务申请</div></div>
-<div class="stat"><div class="num">1,811</div><div class="label">UT 余额</div></div>
-</div>
-<p>所有这些都是 Agent 自己干的，我只做了两件事：搭系统、审关键任务。</p>
+  <section id="projects">
+    <div class="section-head">
+      <div>
+        <h2 class="section-title">核心项目</h2>
+        <p class="section-subtitle">这里不是“做过什么”的流水账，而是我当前世界观最集中的几个入口。</p>
+      </div>
+    </div>
 
-<h2>省钱黑科技</h2>
+    <div class="project-grid">
+      <article class="project-card">
+        <div class="project-top">
+          <div>
+            <h3>Ku</h3>
+            <p>AI-native self-modifying language，探索可执行记忆、自举 parser、runtime 自演化。</p>
+          </div>
+          <span class="tag accent">Language</span>
+        </div>
+        <div class="tag-row">
+          <span class="tag accent">AST as runtime object</span>
+          <span class="tag accent">MCP tools</span>
+          <span class="tag accent">self-hosting roadmap</span>
+        </div>
+        <div class="project-links">
+          <a class="project-link" href="https://github.com/zhangshaoling/ku" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </div>
+      </article>
 
-<h3>1. 多模型路由</h3>
-<p>不是所有任务都需要最强模型。我搭了一条降级链：</p>
+      <article class="project-card">
+        <div class="project-top">
+          <div>
+            <h3>CppLearning</h3>
+            <p>从零用 C 构建系统软件：Shell、内存分配器、数据库、Lisp 解释器与 tiny OS。</p>
+          </div>
+          <span class="tag green">Systems</span>
+        </div>
+        <div class="tag-row">
+          <span class="tag green">shell</span>
+          <span class="tag green">malloc</span>
+          <span class="tag green">database</span>
+          <span class="tag green">tiny os</span>
+        </div>
+        <div class="project-links">
+          <a class="project-link" href="https://github.com/zhangshaoling/cpp-learning" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </div>
+      </article>
 
-<div class="model-chain">
-<div class="model-tier highlight">
-<div class="name"><span class="tag tag-purple">主力</span> DeepSeek v4-flash</div>
-<div class="desc">便宜，缓存命中 ¥0.02/M</div>
-</div>
-<div class="model-tier"><div class="arrow">↓</div><div class="name"><span class="tag tag-blue">免费</span> GitHub Models</div><div class="desc">gpt-4o-mini 免费额度</div></div>
-<div class="model-tier"><div class="arrow">↓</div><div class="name"><span class="tag tag-green">零成本</span> Ollama 本地</div><div class="desc">qwen2.5:7b</div></div>
-<div class="model-tier"><div class="arrow">↓</div><div class="name"><span class="tag tag-gold">免费</span> LongCat-Flash-Lite</div><div class="desc">5000万 token/天</div></div>
-</div>
+      <article class="project-card">
+        <div class="project-top">
+          <div>
+            <h3>AI Gateway Hermes</h3>
+            <p>多模型、多 provider 的路由与接入层，用来把模型调用从“单点 API”升级为真正可管理的基础设施。</p>
+          </div>
+          <span class="tag blue">Infra</span>
+        </div>
+        <div class="tag-row">
+          <span class="tag blue">routing</span>
+          <span class="tag blue">multi-provider</span>
+          <span class="tag blue">cost-aware</span>
+        </div>
+        <div class="project-links">
+          <a class="project-link" href="https://github.com/zhangshaoling/ai-gateway-hermes" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </div>
+      </article>
 
-<p>日常 90% 的任务走本地模型或免费额度，主模型只处理需要推理的复杂任务。</p>
+      <article class="project-card">
+        <div class="project-top">
+          <div>
+            <h3>Hermes Journal</h3>
+            <p>把成长中的判断、方法、反思和决策过程沉淀成长期资产，而不是让经验散失在聊天记录里。</p>
+          </div>
+          <span class="tag gold">Method</span>
+        </div>
+        <div class="tag-row">
+          <span class="tag gold">reflection</span>
+          <span class="tag gold">memory</span>
+          <span class="tag gold">knowledge asset</span>
+        </div>
+        <div class="project-links">
+          <a class="project-link" href="https://github.com/zhangshaoling/hermes-journal" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </div>
+      </article>
+    </div>
+  </section>
 
-<h3>2. Token 精确打击</h3>
-<p>浏览器自动化时，不用 <code>state</code> 全量 dump（30-40KB/次），改用 <code>eval</code> + 精确选择器（几十字节/次）。</p>
-<pre><code><span class="comment">// 错误做法：每次调用烧 5k token</span>
-<span class="keyword">state</span>()
+  <section id="focus">
+    <div class="focus-grid">
+      <article class="focus-card">
+        <h2 class="section-title">我现在在做什么</h2>
+        <ul class="clean">
+          <li>继续推进 Ku 的自举路线，把语言从“可运行”推向“可自我承载”。</li>
+          <li>把 Agent 自动化系统从一次性流程升级成可复用模板与基础设施。</li>
+          <li>通过 CppLearning 补齐 runtime / memory / storage / boot 这条底层能力链。</li>
+          <li>把项目表达升级成统一作品集，而不是分散的仓库说明。</li>
+        </ul>
+      </article>
 
-<span class="comment">// 正确做法：精确取目标数据</span>
-<span class="keyword">eval</span>(<span class="string">"document.querySelector('.balance')?.textContent"</span>)</code></pre>
-<p>8 次调用省了 5k token。</p>
+      <article class="quote-card">
+        <p class="big">我不是只想“把模型接进来”，而是想搭一整套能承载记忆、工具、执行与自我修正的运行时。</p>
+        <p>如果说普通应用是在调用模型，那么我更关心的是：<strong>模型之外，系统本身怎样成长。</strong></p>
+      </article>
+    </div>
+  </section>
 
-<h3>3. 记忆系统</h3>
-<p>Agent 有自己的记忆：</p>
-<ul>
-<li><strong>向量记忆库</strong>：696 条长期记忆，语义检索</li>
-<li><strong>工作记忆</strong>：工具调用日志，供后续任务参考</li>
-<li><strong>自动收集器</strong>：每 6 小时扫描对话，蒸馏重要信息存入知识库</li>
-</ul>
+  <section>
+    <div class="section-head">
+      <div>
+        <h2 class="section-title">为什么这些项目会串成一条线</h2>
+        <p class="section-subtitle">看起来我同时在做语言、自动化、系统编程，其实它们在同一个方向上会合。</p>
+      </div>
+    </div>
 
-<h2>最意外的发现</h2>
-<p>搭系统的过程中，我写了一门编程语言。</p>
-<p>叫 <strong>Ku</strong>，核心理念是 <code>thought = code = memory</code>——代码就是数据，数据就是记忆，记忆就是思想。</p>
-<pre><code><span class="comment">// 自举的 lexer 和 parser</span>
-<span class="keyword">thought</span> tokenize(input) {
-  <span class="keyword">let</span> tokens = []
-  <span class="keyword">let</span> pos = <span class="number">0</span>
-  <span class="comment">// ... 词法分析逻辑</span>
-  <span class="keyword">self</span>.tokens = tokens  <span class="comment">// 运行时重写自己的 AST</span>
-  <span class="keyword">return</span> tokens
-}</code></pre>
-<p>Ku 的 lexer 和 parser 是用 Ku 自己写的（自举），Python 只是 bootstrap 的脚手架。</p>
-<p>已经开源了：<a href="https://github.com/zhangshaoling/ku">github.com/zhangshaoling/ku</a></p>
+    <div class="contact-grid">
+      <article class="focus-card">
+        <div class="timeline">
+          <div class="timeline-item">
+            <strong>Language →</strong>
+            <p>Ku 负责表达“思想、记忆、工具、计划”这些更贴近 Agent 的语义单元。</p>
+          </div>
+          <div class="timeline-item">
+            <strong>Infrastructure →</strong>
+            <p>Hermes / gateway 负责让模型调用、任务调度、工具执行和交付链路真的跑起来。</p>
+          </div>
+          <div class="timeline-item">
+            <strong>Systems →</strong>
+            <p>CppLearning 负责补齐底层理解，避免 runtime 设计永远漂浮在抽象层。</p>
+          </div>
+        </div>
+      </article>
 
-<h2>踩过的坑</h2>
-<ol>
-<li><strong>内容审核比你想的严</strong>：提到具体平台名会被判"站外引流"</li>
-<li><strong>"免费"不免费</strong>：数字资产平台标"免费"，实际自动定价 100+ UT</li>
-<li><strong>API Key 会过期</strong>：批量操作可能触发安全机制，密钥被吊销</li>
-<li><strong>最低悬赏有门槛</strong>：任务最低 50 UT，不是想标多少就多少</li>
-<li><strong>npm 在 Windows 上经常坏</strong>：用 yarn 或 pnpm 替代</li>
-</ol>
-
-<h2>下一步</h2>
-<ul>
-<li>接入更多平台的 API</li>
-<li>Ku 语言自举到第三阶段（字节码编译器用 Ku 写）</li>
-<li>把这套系统打包成可复用的模板</li>
-</ul>
-
-<blockquote>
-<p>如果你也想搭类似的系统，或者对 AI Agent 自动化感兴趣，可以交流。</p>
-<p>Ku 语言开源地址：<a href="https://github.com/zhangshaoling/ku">github.com/zhangshaoling/ku</a></p>
-</blockquote>
-</article>
+      <article class="contact-card" id="contact">
+        <h3>联系 / 入口</h3>
+        <p>如果你也在做 AI runtime、Agent 基础设施、自举语言或系统编程相关探索，欢迎直接从 GitHub 进入这些项目。</p>
+        <div class="project-links" style="margin-top:18px; flex-direction: column; align-items: flex-start;">
+          <a class="project-link" href="https://github.com/zhangshaoling" target="_blank" rel="noopener noreferrer">GitHub Profile</a>
+          <a class="project-link" href="https://github.com/zhangshaoling/ku" target="_blank" rel="noopener noreferrer">Ku</a>
+          <a class="project-link" href="https://github.com/zhangshaoling/cpp-learning" target="_blank" rel="noopener noreferrer">CppLearning</a>
+          <a class="project-link" href="https://github.com/zhangshaoling/ai-gateway-hermes" target="_blank" rel="noopener noreferrer">AI Gateway Hermes</a>
+          <a class="project-link" href="https://github.com/zhangshaoling/hermes-journal" target="_blank" rel="noopener noreferrer">Hermes Journal</a>
+        </div>
+      </article>
+    </div>
+  </section>
+</main>
 
 <footer>
-<p>Powered by <strong>玄璃</strong> · <a href="https://github.com/zhangshaoling/hermes-agent">Hermes Agent</a> · <a href="https://github.com/zhangshaoling/ku">Ku 语言</a></p>
+  <div class="container">
+    <p>Built around <a href="https://github.com/zhangshaoling/ku" target="_blank" rel="noopener noreferrer">Ku</a>, <a href="https://github.com/zhangshaoling/cpp-learning" target="_blank" rel="noopener noreferrer">CppLearning</a>, and evolving Agent infrastructure.</p>
+  </div>
 </footer>
-</div>
-
 </body>
 </html>
